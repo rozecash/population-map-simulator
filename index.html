@@ -9,19 +9,18 @@
 <body>
   <h1>🌍 1840s Population Migration Simulator</h1>
 
-  <!-- Notifications -->
+  <!-- Notification area -->
   <div id="notifications"></div>
 
-  <!-- SVG Map -->
-  <svg id="worldMap" viewBox="0 0 1000 600">
-    <!-- Simplified country shapes -->
-    <path id="germany" class="country" d="M 520 220 L 530 220 L 530 230 L 520 230 Z" />
-    <path id="canada" class="country" d="M 200 100 L 250 100 L 250 150 L 200 150 Z" />
-  </svg>
+  <!-- Custom Map SVG -->
+  <div id="map-container">
+    <!-- Embed the custom map -->
+    <object id="svgMap" type="image/svg+xml" data="world.svg"></object>
+  </div>
 
-  <!-- UI -->
+  <!-- Button -->
   <button id="simulateBtn">Simulate Migration</button>
-  <div id="simulationResult">Click Germany or Canada to select them.</div>
+  <div id="simulationResult">Click countries to select. Germany → Canada will simulate famine migration.</div>
 
   <script src="script.js"></script>
 </body>
