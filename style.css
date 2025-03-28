@@ -1,41 +1,37 @@
 body {
-  background-color: #121212;
+  background-color: #111;
   color: #fff;
   font-family: 'Segoe UI', sans-serif;
   text-align: center;
-  margin: 0;
   padding: 20px;
+  margin: 0;
 }
 
-svg {
-  width: 90%;
-  max-width: 1000px;
-  margin: 20px auto;
-  display: block;
+h1 {
+  margin-bottom: 10px;
+  font-size: 28px;
+  color: #f0f0f0;
 }
 
-.country {
-  fill: gray;
-  stroke: white;
-  stroke-width: 0.5;
-  transition: fill 0.5s ease, stroke 0.3s;
-  cursor: pointer;
+#map-container {
+  width: 95%;
+  max-width: 1200px;
+  margin: 0 auto;
+  border: 2px solid #333;
+  background-color: #1e1e1e;
+  overflow: hidden;
+  border-radius: 10px;
+  pointer-events: none; /* Prevent dragging */
 }
 
-.country.selected {
-  stroke: #ffdd57;
-  stroke-width: 2;
-}
-
-.population-circle {
-  fill: rgba(0, 200, 255, 0.4);
-  stroke: cyan;
-  stroke-width: 1.5;
-  pointer-events: none;
-  transition: r 1s ease;
+object#svgMap {
+  width: 100%;
+  height: auto;
+  pointer-events: auto; /* Needed for clickability */
 }
 
 button {
+  margin-top: 15px;
   padding: 10px 20px;
   background: #7f5af0;
   border: none;
@@ -63,6 +59,7 @@ button:hover {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  z-index: 1000;
 }
 
 .notification {
