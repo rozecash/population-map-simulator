@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Population Growth Simulator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Population Growth Simulation</h1>
+    
+    <!-- Dropdown for selecting countries -->
+    <div class="dropdown">
+      <label for="countrySelect">Choose Country:</label>
+      <select id="countrySelect">
+        <option value="germany">Germany</option>
+        <option value="canada">Canada</option>
+        <option value="france">France</option>
+        <option value="italy">Italy</option>
+        <!-- Add more countries as needed -->
+      </select>
+    </div>
+    
+    <!-- Button to start simulation -->
+    <button id="startSimulation">Start Simulation</button>
+
+    <!-- World map visualization (You can integrate a map API like Leaflet or Google Maps) -->
+    <div id="map" class="map"></div>
+
+    <!-- Display the simulated population changes -->
+    <div id="populationData">
+      <h3>Population Data</h3>
+      <p id="currentPopulation">Current Population: 0</p>
+      <p id="simulationResult">Simulating immigration...</p>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
