@@ -1,91 +1,85 @@
-body {
-  background-color: #121212;
-  color: #fff;
-  font-family: 'Segoe UI', sans-serif;
-  text-align: center;
-  margin: 0;
-  padding: 20px;
-}
+const countries = document.querySelectorAll(".country");
+const map = document.getElementById("worldMap");
+const result = document.getElementById("simulationResult");
+const notifications = document.getElementById("notifications");
 
-svg {
-  width: 90%;
-  max-width: 1000px;
-  margin: 20px auto;
-  display: block;
-}
-
-.country {
-  fill: gray;
-  stroke: white;
-  stroke-width: 0.5;
-  transition: fill 0.5s ease, stroke 0.3s;
-  cursor: pointer;
-}
-
-.country.selected {
-  stroke: #ffdd57;
-  stroke-width: 2;
-}
-
-.population-circle {
-  fill: rgba(0, 200, 255, 0.4);
-  stroke: cyan;
-  stroke-width: 1.5;
-  pointer-events: none;
-  transition: r 1s ease;
-}
-
-button {
-  padding: 10px 20px;
-  background: #7f5af0;
-  border: none;
-  border-radius: 6px;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-button:hover {
-  background: #624bdc;
-}
-
-#simulationResult {
-  margin-top: 15px;
-  color: #aaa;
-  font-size: 16px;
-}
-
-#notifications {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.notification {
-  background-color: #222;
-  border-left: 5px solid #7f5af0;
-  padding: 10px 15px;
-  border-radius: 4px;
-  color: white;
-  opacity: 0;
-  transform: translateX(100%);
-  animation: slideIn 0.5s forwards, fadeOut 0.5s 4s forwards;
-}
-
-@keyframes slideIn {
-  to {
-    opacity: 1;
-    transform: translateX(0);
+// Real historical data (approximate, 1840s)
+const countryData = {
+  germany: {
+    population: 14000000,
+    coords: { x: 525, y: 225 }
+  },
+  canada: {
+    population: 1100000,
+    coords: { x: 225, y: 125 }
   }
+};
+
+let selected = [];
+
+countries.forEach(country => {
+  country.addEventListener("click", () => {
+    const id = country.id;
+    if (selected.includes(id)) {
+      selected = selected.filter(c => c !== id);
+      country.classList.remove("selected");
+    } else {
+      selected.push(id);
+      country.classList.add("selected");
+    }
+    result.textContent = `Selected: ${selected.join(", ")}`;
+  });
+});
+
+document.getElementById("simulateBtn").addEventListener("click", () => {
+  if (selected.length === 0) {
+    notify("Select a country first!", "error");
+    return;
+  }
+
+  selected.forEach(id => {
+    const data = countryData[id];
+    const circleId = `pop-${id}`;
+    const existingCircle = document.getElementById(circleId);
+    const newPop = simulatePopulationChange(id);
+
+    if (existingCircle) existingCircle.remove();
+
+    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circle.setAttribute("id", circleId);
+    circle.setAttribute("class", "population-circle");
+    circle.setAttribute("cx", data.coords.x);
+    circle.setAttribute("cy", data.coords.y);
+
+    // Scale population to radius visually
+    const radius = Math.sqrt(newPop / 20000); // adjust scaling factor
+    circle.setAttribute("r", 0);
+    map.appendChild(circle);
+
+    setTimeout(() => circle.setAttribute("r", radius), 50);
+
+    notify(`${id.charAt(0).toUpperCase() + id.slice(1)} population: ${newPop.toLocaleString()}`, "info");
+
+    countryData[id].population = newPop;
+  });
+});
+
+function simulatePopulationChange(id) {
+  const current = countryData[id].population;
+  let change = Math.floor(Math.random() * 2000000) - 1000000;
+  if (id === "canada" && selected.includes("germany")) {
+    change += 1500000; // immigration boost
+  }
+  return Math.max(500000, current + change);
 }
 
-@keyframes fadeOut {
-  to {
-    opacity: 0;
-    transform: translateX(100%);
-  }
+function notify(message, type) {
+  const div = document.createElement("div");
+  div.className = "notification";
+  div.textContent = message;
+  notifications.appendChild(div);
+
+  setTimeout(() => {
+    div.remove();
+  }, 5000);
 }
