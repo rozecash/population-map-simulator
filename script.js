@@ -1,4 +1,4 @@
-// Population data for example countries
+// Initial population data
 const populationData = {
   germany: { population: 83000000, coords: [51.1657, 10.4515] },
   canada: { population: 38000000, coords: [56.1304, -106.3468] },
@@ -6,70 +6,82 @@ const populationData = {
   italy: { population: 60000000, coords: [41.8719, 12.5674] },
 };
 
-// Initialize the map
-const map = L.map("map").setView([20, 0], 2); // Centered globally
-
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-}).addTo(map);
-
-const countryLayers = {};
-
-// Add countries to the map
-Object.keys(populationData).forEach((country) => {
-  const { coords } = populationData[country];
-  const layer = L.circle(coords, {
-    color: "gray",
-    fillColor: "gray",
-    fillOpacity: 0.5,
-    radius: 500000,
-  }).addTo(map);
-
-  layer.bindPopup(`${country.charAt(0).toUpperCase() + country.slice(1)}`);
-  countryLayers[country] = layer;
+// Disable map movement by customizing options
+const map = L.map("map", {
+  center: [20, 0],
+  zoom: 2,
+  zoomControl: false,
+  dragging: false,
+  scrollWheelZoom: false,
+  doubleClickZoom: false,
+  boxZoom: false,
+  keyboard: false,
+  tap: false,
+  touchZoom: false
 });
 
-// Function to simulate population change
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '&copy; OpenStreetMap contributors',
+}).addTo(map);
+
+// Store circles per country
+const countryLayers = {};
+
+Object.entries(populationData).forEach(([country, data]) => {
+  const circle = L.circle(data.coords, {
+    color: "gray",
+    fillColor: "gray",
+    fillOpacity: 0.6,
+    radius: 500000
+  }).addTo(map);
+  circle.bindPopup(`${country.charAt(0).toUpperCase() + country.slice(1)}`);
+  countryLayers[country] = circle;
+});
+
 function simulatePopulationChange(selectedCountries) {
   const resultDisplay = document.getElementById("simulationResult");
   resultDisplay.textContent = "Simulating population changes...";
-  const updateInterval = 50; // Update every 50ms
 
   selectedCountries.forEach((country) => {
-    let currentPopulation = populationData[country].population;
-    const immigrationEffect = Math.random() * 5000000 - 2500000; // Random growth/decline
-    const targetPopulation = currentPopulation + immigrationEffect;
+    const originalPopulation = populationData[country].population;
+    const randomEffect = Math.floor(Math.random() * 5000000 - 2500000); // +/- 2.5M
+    const targetPopulation = originalPopulation + randomEffect;
 
-    const updatePopulation = setInterval(() => {
-      if (Math.abs(currentPopulation - targetPopulation) < 1000) {
-        clearInterval(updatePopulation);
-        populationData[country].population = targetPopulation; // Finalize population
+    let currentPop = originalPopulation;
+
+    const interval = setInterval(() => {
+      const diff = targetPopulation - currentPop;
+
+      if (Math.abs(diff) < 1000) {
+        clearInterval(interval);
+        populationData[country].population = targetPopulation;
+
         resultDisplay.textContent = `Simulation complete for ${selectedCountries.join(", ")}.`;
       } else {
-        currentPopulation += (targetPopulation - currentPopulation) / 10; // Smooth change
-        const layer = countryLayers[country];
-        const percentageChange = ((currentPopulation / populationData[country].population) - 1) * 100;
+        currentPop += diff / 20; // smooth easing
+        const roundedPop = Math.round(currentPop);
+        const changePercent = ((roundedPop - originalPopulation) / originalPopulation) * 100;
 
-        // Update map circle radius and color dynamically
-        layer.setStyle({
-          fillColor: percentageChange > 0 ? "green" : "red",
-          color: percentageChange > 0 ? "green" : "red",
+        const circle = countryLayers[country];
+        circle.setStyle({
+          color: changePercent > 0 ? "limegreen" : "crimson",
+          fillColor: changePercent > 0 ? "limegreen" : "crimson"
         });
-        layer.setRadius(500000 + (percentageChange / 2) * 100000); // Adjust size
+
+        // Adjust radius based on percentage change
+        circle.setRadius(500000 + changePercent * 10000);
+
+        circle.setPopupContent(`${country.charAt(0).toUpperCase() + country.slice(1)}<br>Population: ${roundedPop.toLocaleString()}`);
       }
-    }, updateInterval);
+    }, 50);
   });
 }
 
-// UI Interaction
 document.getElementById("startSimulation").addEventListener("click", () => {
-  const selectedOptions = Array.from(
-    document.querySelectorAll("#countrySelect option:checked")
-  ).map((option) => option.value);
-
-  if (selectedOptions.length > 0) {
-    simulatePopulationChange(selectedOptions);
-  } else {
-    alert("Please select at least one country to simulate.");
+  const selectedOptions = Array.from(document.querySelectorAll("#countrySelect option:checked")).map(opt => opt.value);
+  if (selectedOptions.length === 0) {
+    alert("Please select at least one country.");
+    return;
   }
+  simulatePopulationChange(selectedOptions);
 });
