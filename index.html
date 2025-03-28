@@ -3,34 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>World Population Simulation</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <title>Custom World Population Simulator</title>
   <style>
     body {
-      background: #1a1a2e;
+      background-color: #1a1a2e;
       font-family: 'Segoe UI', sans-serif;
-      color: #fff;
+      color: white;
       text-align: center;
       margin: 0;
-      padding: 0;
+      padding: 20px;
     }
-    h1 {
-      margin-top: 20px;
-      color: #fff;
+
+    svg {
+      width: 90%;
+      max-width: 1000px;
+      margin: 20px auto;
+      display: block;
     }
-    #controls {
-      margin: 20px;
+
+    .country {
+      fill: gray;
+      stroke: white;
+      stroke-width: 0.5;
+      transition: fill 0.5s ease;
+      cursor: pointer;
     }
-    select {
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 16px;
-      background: #292f4c;
-      color: #fff;
-      border: none;
+
+    .country.selected {
+      stroke: yellow;
+      stroke-width: 1.5;
     }
+
     button {
-      margin-left: 10px;
       padding: 10px 20px;
       background: #7f5af0;
       color: #fff;
@@ -39,39 +43,34 @@
       font-size: 16px;
       cursor: pointer;
       transition: background 0.3s;
+      margin-top: 10px;
     }
+
     button:hover {
       background: #624bdc;
     }
-    #map {
-      height: 500px;
-      width: 90%;
-      margin: 0 auto;
-      border-radius: 10px;
-      margin-bottom: 20px;
-    }
+
     #simulationResult {
+      margin-top: 20px;
       font-size: 18px;
-      margin-bottom: 20px;
       color: #ccc;
     }
   </style>
 </head>
 <body>
   <h1>🌍 World Population Simulator</h1>
-  <div id="controls">
-    <select id="countrySelect" multiple size="4">
-      <option value="germany">Germany</option>
-      <option value="canada">Canada</option>
-      <option value="france">France</option>
-      <option value="italy">Italy</option>
-    </select>
-    <button id="startSimulation">Start Simulation</button>
-  </div>
-  <div id="simulationResult">Select one or more countries to simulate immigration impact.</div>
-  <div id="map"></div>
 
-  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <svg id="worldMap" viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
+    <!-- Only a few countries for example; use a full SVG later -->
+    <path id="germany" class="country" d="M 520 220 L 530 220 L 530 230 L 520 230 Z" />
+    <path id="canada" class="country" d="M 200 100 L 250 100 L 250 150 L 200 150 Z" />
+    <path id="france" class="country" d="M 500 250 L 510 250 L 510 260 L 500 260 Z" />
+    <path id="italy" class="country" d="M 540 270 L 545 270 L 545 280 L 540 280 Z" />
+  </svg>
+
+  <button id="simulateBtn">Simulate Population Change</button>
+  <div id="simulationResult">Click countries on the map to select them.</div>
+
   <script src="script.js"></script>
 </body>
 </html>
