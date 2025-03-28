@@ -1,62 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Population Simulation</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>World Population Simulation</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
   <style>
     body {
-      font-family: Arial, sans-serif;
+      background: #1a1a2e;
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+      text-align: center;
       margin: 0;
       padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: #1e1e2f;
-      color: white;
     }
-    #map {
-      width: 80%;
-      height: 500px;
+    h1 {
       margin-top: 20px;
-      border-radius: 15px;
+      color: #fff;
     }
     #controls {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 20px;
-      gap: 10px;
+      margin: 20px;
     }
     select {
       padding: 10px;
-      border-radius: 5px;
+      border-radius: 6px;
       font-size: 16px;
+      background: #292f4c;
+      color: #fff;
+      border: none;
     }
     button {
+      margin-left: 10px;
       padding: 10px 20px;
+      background: #7f5af0;
+      color: #fff;
       border: none;
-      border-radius: 5px;
-      background: #6200ee;
-      color: white;
+      border-radius: 6px;
       font-size: 16px;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: background 0.3s;
     }
     button:hover {
-      background: #3700b3;
+      background: #624bdc;
+    }
+    #map {
+      height: 500px;
+      width: 90%;
+      margin: 0 auto;
+      border-radius: 10px;
+      margin-bottom: 20px;
     }
     #simulationResult {
-      margin-top: 20px;
       font-size: 18px;
+      margin-bottom: 20px;
+      color: #ccc;
     }
   </style>
 </head>
 <body>
-  <h1>World Population Simulation</h1>
+  <h1>🌍 World Population Simulator</h1>
   <div id="controls">
-    <select id="countrySelect" multiple>
+    <select id="countrySelect" multiple size="4">
       <option value="germany">Germany</option>
       <option value="canada">Canada</option>
       <option value="france">France</option>
@@ -64,9 +68,10 @@
     </select>
     <button id="startSimulation">Start Simulation</button>
   </div>
-  <div id="simulationResult">Select countries and start the simulation!</div>
+  <div id="simulationResult">Select one or more countries to simulate immigration impact.</div>
   <div id="map"></div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
