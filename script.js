@@ -1,85 +1,98 @@
-const countries = document.querySelectorAll(".country");
-const map = document.getElementById("worldMap");
-const result = document.getElementById("simulationResult");
+const selected = new Set();
 const notifications = document.getElementById("notifications");
+const simulateBtn = document.getElementById("simulateBtn");
 
-// Real historical data (approximate, 1840s)
 const countryData = {
-  germany: {
+  DE: {
+    name: "Germany",
     population: 14000000,
-    coords: { x: 525, y: 225 }
+    cx: 540,
+    cy: 230
   },
-  canada: {
+  CA: {
+    name: "Canada",
     population: 1100000,
-    coords: { x: 225, y: 125 }
+    cx: 200,
+    cy: 140
   }
 };
 
-let selected = [];
+window.addEventListener("load", () => {
+  const svgDoc = document.getElementById("svgMap").contentDocument;
+  if (!svgDoc) return;
 
-countries.forEach(country => {
-  country.addEventListener("click", () => {
-    const id = country.id;
-    if (selected.includes(id)) {
-      selected = selected.filter(c => c !== id);
-      country.classList.remove("selected");
-    } else {
-      selected.push(id);
-      country.classList.add("selected");
+  Object.keys(countryData).forEach(id => {
+    const el = svgDoc.getElementById(id);
+    if (el) {
+      el.style.fill = "#555";
+      el.style.cursor = "pointer";
+
+      el.addEventListener("click", () => {
+        if (selected.has(id)) {
+          el.style.fill = "#555";
+          selected.delete(id);
+        } else {
+          el.style.fill = "#ffdd57";
+          selected.add(id);
+        }
+
+        document.getElementById("simulationResult").textContent =
+          "Selected: " + [...selected].map(k => countryData[k]?.name || k).join(", ");
+      });
     }
-    result.textContent = `Selected: ${selected.join(", ")}`;
   });
 });
 
-document.getElementById("simulateBtn").addEventListener("click", () => {
-  if (selected.length === 0) {
-    notify("Select a country first!", "error");
+simulateBtn.addEventListener("click", () => {
+  if (selected.size === 0) {
+    notify("Please select at least one country to simulate.");
     return;
   }
 
+  const svgDoc = document.getElementById("svgMap").contentDocument;
+  if (!svgDoc) return;
+
   selected.forEach(id => {
-    const data = countryData[id];
-    const circleId = `pop-${id}`;
-    const existingCircle = document.getElementById(circleId);
-    const newPop = simulatePopulationChange(id);
+    const country = countryData[id];
+    if (!country) return;
 
-    if (existingCircle) existingCircle.remove();
+    // Simulate population change
+    let change = Math.floor(Math.random() * 2000000) - 1000000;
+    if (id === "CA" && selected.has("DE")) change += 1500000;
 
-    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    circle.setAttribute("id", circleId);
-    circle.setAttribute("class", "population-circle");
-    circle.setAttribute("cx", data.coords.x);
-    circle.setAttribute("cy", data.coords.y);
+    const newPop = Math.max(300000, country.population + change);
+    country.population = newPop;
 
-    // Scale population to radius visually
-    const radius = Math.sqrt(newPop / 20000); // adjust scaling factor
-    circle.setAttribute("r", 0);
-    map.appendChild(circle);
-
-    setTimeout(() => circle.setAttribute("r", radius), 50);
-
-    notify(`${id.charAt(0).toUpperCase() + id.slice(1)} population: ${newPop.toLocaleString()}`, "info");
-
-    countryData[id].population = newPop;
+    drawPopCircle(svgDoc, country.cx, country.cy, newPop);
+    notify(`${country.name}'s population: ${newPop.toLocaleString()}`);
   });
 });
 
-function simulatePopulationChange(id) {
-  const current = countryData[id].population;
-  let change = Math.floor(Math.random() * 2000000) - 1000000;
-  if (id === "canada" && selected.includes("germany")) {
-    change += 1500000; // immigration boost
-  }
-  return Math.max(500000, current + change);
+function drawPopCircle(svgDoc, x, y, population) {
+  const existing = svgDoc.getElementById(`pop-${x}-${y}`);
+  if (existing) existing.remove();
+
+  const circle = svgDoc.createElementNS("http://www.w3.org/2000/svg", "circle");
+  circle.setAttribute("cx", x);
+  circle.setAttribute("cy", y);
+  circle.setAttribute("r", 0);
+  circle.setAttribute("fill", "rgba(0, 200, 255, 0.4)");
+  circle.setAttribute("stroke", "cyan");
+  circle.setAttribute("stroke-width", 1.5);
+  circle.setAttribute("id", `pop-${x}-${y}`);
+  svgDoc.documentElement.appendChild(circle);
+
+  const radius = Math.sqrt(population / 100000); // adjust visual scale
+
+  setTimeout(() => {
+    circle.setAttribute("r", radius);
+  }, 50);
 }
 
-function notify(message, type) {
+function notify(message) {
   const div = document.createElement("div");
   div.className = "notification";
   div.textContent = message;
   notifications.appendChild(div);
-
-  setTimeout(() => {
-    div.remove();
-  }, 5000);
+  setTimeout(() => div.remove(), 5000);
 }
