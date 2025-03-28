@@ -3,39 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Population Growth Simulator</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Population Simulation</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #1e1e2f;
+      color: white;
+    }
+    #map {
+      width: 80%;
+      height: 500px;
+      margin-top: 20px;
+      border-radius: 15px;
+    }
+    #controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+      gap: 10px;
+    }
+    select {
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background: #6200ee;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #3700b3;
+    }
+    #simulationResult {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Population Growth Simulation</h1>
-    
-    <!-- Dropdown for selecting countries -->
-    <div class="dropdown">
-      <label for="countrySelect">Choose Country:</label>
-      <select id="countrySelect">
-        <option value="germany">Germany</option>
-        <option value="canada">Canada</option>
-        <option value="france">France</option>
-        <option value="italy">Italy</option>
-        <!-- Add more countries as needed -->
-      </select>
-    </div>
-    
-    <!-- Button to start simulation -->
+  <h1>World Population Simulation</h1>
+  <div id="controls">
+    <select id="countrySelect" multiple>
+      <option value="germany">Germany</option>
+      <option value="canada">Canada</option>
+      <option value="france">France</option>
+      <option value="italy">Italy</option>
+    </select>
     <button id="startSimulation">Start Simulation</button>
-
-    <!-- World map visualization (You can integrate a map API like Leaflet or Google Maps) -->
-    <div id="map" class="map"></div>
-
-    <!-- Display the simulated population changes -->
-    <div id="populationData">
-      <h3>Population Data</h3>
-      <p id="currentPopulation">Current Population: 0</p>
-      <p id="simulationResult">Simulating immigration...</p>
-    </div>
   </div>
-
+  <div id="simulationResult">Select countries and start the simulation!</div>
+  <div id="map"></div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
   <script src="script.js"></script>
 </body>
